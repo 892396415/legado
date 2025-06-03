@@ -97,6 +97,8 @@ fun Fragment.startActivityForBook(
         book.isImage && AppConfig.showMangaUi -> ReadMangaActivity::class.java
         else -> ReadBookActivity::class.java
     }
+    LogUtils.d("startActivityForBook", "cls: $cls")
+    LogUtils.d("startActivityForBook", "book: $book")
     val intent = Intent(requireActivity(), cls)
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     intent.putExtra("bookUrl", book.bookUrl)

@@ -254,6 +254,9 @@ class ReadBookActivity : BaseReadBookActivity(),
     private var justInitData: Boolean = false
     private var syncDialog: AlertDialog? = null
 
+    /**
+     * 当 Activity 创建时调用，进行一些初始化操作
+     */
     @SuppressLint("ClickableViewAccessibility")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -291,6 +294,9 @@ class ReadBookActivity : BaseReadBookActivity(),
         }
     }
 
+    /**
+     * 在 Activity 创建完成后调用，初始化阅读配置和数据
+     */
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         viewModel.initReadBookConfig(intent)
@@ -301,11 +307,19 @@ class ReadBookActivity : BaseReadBookActivity(),
         justInitData = true
     }
 
+
+    /**
+     * 当 Activity 接收到新的 Intent 时调用，重新初始化数据
+     */
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         viewModel.initData(intent)
     }
 
+
+    /**
+     * 当窗口焦点改变时调用，更新系统 UI 可见性
+     */
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         upSystemUiVisibility()
@@ -316,18 +330,28 @@ class ReadBookActivity : BaseReadBookActivity(),
         }
     }
 
+
+    /**
+     * 当设备配置改变时调用，更新系统 UI 可见性和阅读视图状态
+     */
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         upSystemUiVisibility()
         binding.readView.upStatusBar()
     }
 
+    /**
+     * 当 Activity 是否为顶层恢复活动状态改变时调用，取消预下载任务
+     */
     override fun onTopResumedActivityChanged(isTopResumedActivity: Boolean) {
         if (!isTopResumedActivity) {
             ReadBook.cancelPreDownloadTask()
         }
     }
 
+    /**
+     * 当 Activity 恢复时调用，恢复阅读进度，注册广播接收器等
+     */
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onResume() {
         super.onResume()
@@ -358,6 +382,10 @@ class ReadBookActivity : BaseReadBookActivity(),
         }
     }
 
+
+    /**
+     * 当 Activity 暂停时调用，保存阅读进度，取消任务，注销广播接收器等
+     */
     override fun onPause() {
         super.onPause()
         autoPageStop()
@@ -378,6 +406,9 @@ class ReadBookActivity : BaseReadBookActivity(),
         networkChangedListener.unRegister()
     }
 
+    /**
+     * 创建选项菜单时调用，加载菜单布局并设置长按事件
+     */
     override fun onCompatCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.book_read, menu)
         menu.iconItemOnLongClick(R.id.menu_change_source) {
@@ -398,12 +429,18 @@ class ReadBookActivity : BaseReadBookActivity(),
         return super.onCompatCreateOptionsMenu(menu)
     }
 
+    /**
+     * 准备选项菜单时调用，更新菜单状态
+     */
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         this.menu = menu
         upMenu()
         return super.onPrepareOptionsMenu(menu)
     }
 
+    /**
+     * 菜单打开时调用，更新菜单项的选中状态
+     */
     override fun onMenuOpened(featureId: Int, menu: Menu): Boolean {
         menu.findItem(R.id.menu_same_title_removed)?.isChecked =
             ReadBook.curTextChapter?.sameTitleRemoved == true
@@ -411,7 +448,7 @@ class ReadBookActivity : BaseReadBookActivity(),
     }
 
     /**
-     * 更新菜单
+     * 更新菜单的可见性和选中状态
      */
     private fun upMenu() {
         val menu = menu ?: return
@@ -449,7 +486,7 @@ class ReadBookActivity : BaseReadBookActivity(),
     }
 
     /**
-     * 菜单
+     * 处理选项菜单项的点击事件
      */
     override fun onCompatOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -623,18 +660,24 @@ class ReadBookActivity : BaseReadBookActivity(),
         return super.onCompatOptionsItemSelected(item)
     }
 
+    /**
+     * 刷新整本书的内容
+     */
     private fun refreshContentAll(book: Book) {
         ReadBook.clearTextChapter()
         binding.readView.upContent()
         viewModel.refreshContentAll(book)
     }
 
+    /**
+     * 处理弹出菜单项的点击事件
+     */
     override fun onMenuItemClick(item: MenuItem): Boolean {
         return onCompatOptionsItemSelected(item)
     }
 
     /**
-     * 按键拦截,显示菜单
+     * 按键拦截，处理菜单显示逻辑
      */
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         val keyCode = event.keyCode
@@ -655,7 +698,7 @@ class ReadBookActivity : BaseReadBookActivity(),
     }
 
     /**
-     * 鼠标滚轮事件
+     * 处理鼠标滚轮事件，实现翻页功能
      */
     override fun onGenericMotionEvent(event: MotionEvent): Boolean {
         if (0 != (event.source and InputDevice.SOURCE_CLASS_POINTER)) {
@@ -675,7 +718,7 @@ class ReadBookActivity : BaseReadBookActivity(),
     }
 
     /**
-     * 按键事件
+     * 处理按键按下事件，实现翻页等功能
      */
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         if (menuLayoutIsVisible) {
@@ -722,7 +765,7 @@ class ReadBookActivity : BaseReadBookActivity(),
     }
 
     /**
-     * 松开按键事件
+     * 处理按键松开事件，处理音量键相关逻辑
      */
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
         when (keyCode) {
@@ -737,7 +780,7 @@ class ReadBookActivity : BaseReadBookActivity(),
     }
 
     /**
-     * view触摸,文字选择
+     * 处理视图触摸事件，实现文字选择功能
      */
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouch(v: View, event: MotionEvent): Boolean = binding.run {
@@ -811,6 +854,9 @@ class ReadBookActivity : BaseReadBookActivity(),
         textActionMenu.dismiss()
     }
 
+    /**
+     * 处理长截图触摸事件
+     */
     override fun onLongScreenshotTouchEvent(event: MotionEvent): Boolean {
         return binding.readView.onTouchEvent(event)
     }
@@ -839,7 +885,7 @@ class ReadBookActivity : BaseReadBookActivity(),
     override val selectedText: String get() = binding.readView.getSelectText()
 
     /**
-     * 文本选择菜单操作
+     * 处理文本选择菜单操作
      */
     override fun onMenuItemSelected(itemId: Int): Boolean {
         when (itemId) {
@@ -894,13 +940,16 @@ class ReadBookActivity : BaseReadBookActivity(),
     }
 
     /**
-     * 文本选择菜单操作完成
+     * 处理文本选择菜单操作完成后的逻辑
      */
     override fun onMenuActionFinally() = binding.run {
         textActionMenu.dismiss()
         readView.cancelSelect()
     }
 
+    /**
+     * 朗读指定文本
+     */
     private fun speak(text: String) {
         if (tts == null) {
             tts = TTS()
@@ -909,7 +958,7 @@ class ReadBookActivity : BaseReadBookActivity(),
     }
 
     /**
-     * 鼠标滚轮翻页
+     * 处理鼠标滚轮翻页
      */
     private fun mouseWheelPage(direction: PageDirection) {
         if (menuLayoutIsVisible || !AppConfig.mouseWheelPage) {
@@ -919,7 +968,7 @@ class ReadBookActivity : BaseReadBookActivity(),
     }
 
     /**
-     * 音量键翻页
+     * 处理音量键翻页
      */
     private fun volumeKeyPage(direction: PageDirection, longPress: Boolean): Boolean {
         if (!AppConfig.volumeKeyPage) {
@@ -932,6 +981,9 @@ class ReadBookActivity : BaseReadBookActivity(),
         return true
     }
 
+    /**
+     * 处理按键翻页逻辑
+     */
     private fun handleKeyPage(direction: PageDirection, longPress: Boolean) {
         if (AppConfig.keyPageOnLongPress || direction == PageDirection.NONE) {
             keyPage(direction)
@@ -940,6 +992,9 @@ class ReadBookActivity : BaseReadBookActivity(),
         }
     }
 
+    /**
+     * 按键翻页防抖处理
+     */
     private fun keyPageDebounce(
         direction: PageDirection,
         mouseWheel: Boolean = false,
@@ -965,12 +1020,18 @@ class ReadBookActivity : BaseReadBookActivity(),
         }
     }
 
+    /**
+     * 执行按键翻页操作
+     */
     private fun keyPage(direction: PageDirection) {
         binding.readView.cancelSelect()
         binding.readView.pageDelegate?.isCancel = false
         binding.readView.pageDelegate?.keyTurnPage(direction)
     }
 
+    /**
+     * 更新菜单视图
+     */
     override fun upMenuView() {
         handler.post {
             upMenu()
@@ -978,13 +1039,16 @@ class ReadBookActivity : BaseReadBookActivity(),
         }
     }
 
+    /**
+     * 加载章节列表
+     */
     override fun loadChapterList(book: Book) {
         ReadBook.upMsg(getString(R.string.toc_updateing))
         viewModel.loadChapterList(book)
     }
 
     /**
-     * 内容加载完成
+     * 内容加载完成回调
      */
     override fun contentLoadFinish() {
         if (intent.getBooleanExtra("readAloud", false)) {
@@ -1012,6 +1076,9 @@ class ReadBookActivity : BaseReadBookActivity(),
         }
     }
 
+    /**
+     * 异步更新内容
+     */
     override suspend fun upContentAwait(
         relativePosition: Int,
         resetPageOffset: Boolean,
@@ -1024,12 +1091,18 @@ class ReadBookActivity : BaseReadBookActivity(),
         loadStates = false
     }
 
+    /**
+     * 更新页面动画
+     */
     override fun upPageAnim(upRecorder: Boolean) {
         lifecycleScope.launch {
             binding.readView.upPageAnim(upRecorder)
         }
     }
 
+    /**
+     * 通知书籍发生改变
+     */
     override fun notifyBookChanged() {
         bookChanged = true
         if (!ReadBook.inBookshelf) {
@@ -1037,6 +1110,9 @@ class ReadBookActivity : BaseReadBookActivity(),
         }
     }
 
+    /**
+     * 取消文字选择
+     */
     override fun cancelSelect() {
         runOnUiThread {
             binding.readView.cancelSelect()
@@ -1044,7 +1120,7 @@ class ReadBookActivity : BaseReadBookActivity(),
     }
 
     /**
-     * 页面改变
+     * 页面改变回调
      */
     override fun pageChanged() {
         pageChanged = true
@@ -1075,9 +1151,15 @@ class ReadBookActivity : BaseReadBookActivity(),
         binding.readMenu.runMenuIn()
     }
 
+    /**
+     * 获取旧书籍信息
+     */
     override val oldBook: Book?
         get() = ReadBook.book
 
+    /**
+     * 切换书籍源
+     */
     override fun changeTo(source: BookSource, book: Book, toc: List<BookChapter>) {
         if (!book.isAudio) {
             viewModel.changeTo(book, toc)
@@ -1096,12 +1178,18 @@ class ReadBookActivity : BaseReadBookActivity(),
         }
     }
 
+    /**
+     * 替换书籍内容
+     */
     override fun replaceContent(content: String) {
         ReadBook.book?.let {
             viewModel.saveContent(it, content)
         }
     }
 
+    /**
+     * 显示操作菜单
+     */
     override fun showActionMenu() {
         when {
             BaseReadAloudService.isRun -> showReadAloudDialog()
@@ -1133,6 +1221,9 @@ class ReadBookActivity : BaseReadBookActivity(),
         }
     }
 
+    /**
+     * 停止自动翻页
+     */
     override fun autoPageStop() {
         if (isAutoPage) {
             binding.readView.autoPager.stop()
@@ -1142,6 +1233,9 @@ class ReadBookActivity : BaseReadBookActivity(),
         }
     }
 
+    /**
+     * 打开书源编辑界面
+     */
     override fun openSourceEditActivity() {
         ReadBook.bookSource?.let {
             sourceEditActivity.launch {
@@ -1150,6 +1244,9 @@ class ReadBookActivity : BaseReadBookActivity(),
         }
     }
 
+    /**
+     * 打开书籍信息界面
+     */
     override fun openBookInfoActivity() {
         ReadBook.book?.let {
             bookInfoActivity.launch {
@@ -1160,14 +1257,14 @@ class ReadBookActivity : BaseReadBookActivity(),
     }
 
     /**
-     * 替换
+     * 打开替换规则界面
      */
     override fun openReplaceRule() {
         replaceActivity.launch(Intent(this, ReplaceRuleActivity::class.java))
     }
 
     /**
-     * 打开目录
+     * 打开目录界面
      */
     override fun openChapterList() {
         ReadBook.book?.let {
@@ -1259,6 +1356,9 @@ class ReadBookActivity : BaseReadBookActivity(),
         }
     }
 
+    /**
+     * 显示登录界面
+     */
     override fun showLogin() {
         ReadBook.bookSource?.let {
             startActivity<SourceLoginActivity> {
@@ -1268,6 +1368,10 @@ class ReadBookActivity : BaseReadBookActivity(),
         }
     }
 
+
+    /**
+     * 执行付费操作
+     */
     override fun payAction() {
         val book = ReadBook.book ?: return
         if (book.isLocal) return
@@ -1318,7 +1422,7 @@ class ReadBookActivity : BaseReadBookActivity(),
     }
 
     /**
-     * 朗读按钮
+     * 处理朗读按钮点击事件
      */
     override fun onClickReadAloud() {
         autoPageStop()
@@ -1349,12 +1453,15 @@ class ReadBookActivity : BaseReadBookActivity(),
         }
     }
 
+    /**
+     * 显示帮助信息
+     */
     override fun showHelp() {
         showHelp("readMenuHelp")
     }
 
     /**
-     * 长按图片
+     * 处理图片长按事件
      */
     @SuppressLint("RtlHardcoded")
     override fun onImageLongPress(x: Float, y: Float, src: String) {
@@ -1397,7 +1504,7 @@ class ReadBookActivity : BaseReadBookActivity(),
     }
 
     /**
-     * colorSelectDialog
+     * 处理颜色选择对话框选中颜色事件
      */
     override fun onColorSelected(dialogId: Int, color: Int) = ReadBookConfig.durConfig.run {
         when (dialogId) {
@@ -1432,10 +1539,14 @@ class ReadBookActivity : BaseReadBookActivity(),
     }
 
     /**
-     * colorSelectDialog
+     * 处理颜色选择对话框关闭事件
      */
     override fun onDialogDismissed(dialogId: Int) = Unit
 
+
+    /**
+     * 处理目录正则对话框结果
+     */
     override fun onTocRegexDialogResult(tocRegex: String) {
         ReadBook.book?.let {
             it.tocUrl = tocRegex
@@ -1443,6 +1554,10 @@ class ReadBookActivity : BaseReadBookActivity(),
         }
     }
 
+
+    /**
+     * 确认同步进度
+     */
     private fun sureSyncProgress(progress: BookProgress) {
         alert(R.string.get_book_progress) {
             setMessage(R.string.current_progress_exceeds_cloud)
@@ -1453,32 +1568,47 @@ class ReadBookActivity : BaseReadBookActivity(),
         }
     }
 
-    /* 进度条跳转到指定章节 */
+    /**
+     * 进度条跳转到指定章节
+     */
     override fun skipToChapter(index: Int) {
         ReadBook.saveCurrentBookProgress() //退出章节跳转恢复此时进度
         viewModel.openChapter(index)
     }
 
-    /* 全文搜索跳转 */
+    /**
+     * 全文搜索跳转
+     */
     override fun navigateToSearch(searchResult: SearchResult, index: Int) {
         viewModel.searchResultIndex = index
         skipToSearch(searchResult)
     }
 
+    /**
+     * 菜单显示回调
+     */
     override fun onMenuShow() {
         binding.readView.autoPager.pause()
     }
 
+    /**
+     * 菜单隐藏回调
+     */
     override fun onMenuHide() {
         binding.readView.autoPager.resume()
     }
 
+    /**
+     * 页面布局完成回调
+     */
     override fun onLayoutPageCompleted(index: Int, page: TextPage) {
         upSeekBarThrottle.invoke()
         binding.readView.onLayoutPageCompleted(index, page)
     }
 
-    /* 全文搜索跳转 */
+    /**
+     * 全文搜索跳转
+     */
     private fun skipToSearch(searchResult: SearchResult) {
         if (searchResult.chapterIndex != ReadBook.durChapterIndex) {
             viewModel.openChapter(searchResult.chapterIndex) {
@@ -1489,6 +1619,9 @@ class ReadBookActivity : BaseReadBookActivity(),
         }
     }
 
+    /**
+     * 跳转到指定位置
+     */
     private fun jumpToPosition(searchResult: SearchResult) {
         val curTextChapter = ReadBook.curTextChapter ?: return
         binding.searchMenu.updateSearchInfo()
@@ -1515,6 +1648,9 @@ class ReadBookActivity : BaseReadBookActivity(),
         }
     }
 
+    /**
+     * 添加书签
+     */
     override fun addBookmark() {
         val book = ReadBook.book
         val page = ReadBook.curTextChapter?.getPage(ReadBook.durPageIndex)
