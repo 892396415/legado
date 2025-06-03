@@ -65,6 +65,7 @@ class BooksFragment() : BaseFragment(R.layout.fragment_books),
     private val bookshelfLayout by lazy { AppConfig.bookshelfLayout }
     private val booksAdapter: BaseBooksAdapter<*> by lazy {
         if (bookshelfLayout == 0) {
+            // ViewPager的第一个界面，展示书架界面的列表布局
             BooksAdapterList(requireContext(), this, this, viewLifecycleOwner.lifecycle)
         } else {
             BooksAdapterGrid(requireContext(), this)
@@ -239,6 +240,7 @@ class BooksFragment() : BaseFragment(R.layout.fragment_books),
     }
 
     override fun open(book: Book) {
+        // 书架界面书籍列表的真正执行点击事件的逻辑
         startActivityForBook(book)
     }
 

@@ -81,6 +81,10 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
     private val fragmentMap = hashMapOf<Int, Fragment>()
     private var bottomMenuCount = 4
     private val realPositions = arrayOf(idBookshelf, idExplore, idRss, idMy)
+
+    /**
+     * 通过ViewPager实现平滑移动页面
+     */
     private val adapter by lazy {
         TabFragmentPageAdapter(supportFragmentManager)
     }

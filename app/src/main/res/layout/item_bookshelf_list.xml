@@ -76,6 +76,11 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="RtlHardcoded,RtlSymmetry" />
 
+    <!--
+    AppCompatImageView 是 Android Support Library 提供的兼容版本 ImageView，
+    能在旧版本 Android 系统上实现与新版本 ImageView 一致的功能和特性。借助使用
+    AppCompatImageView，可以确保应用在不同 Android 版本上保持一致的界面表现，提升应用的兼容性
+    -->
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/iv_author"
         android:layout_width="@dimen/desc_icon_size"

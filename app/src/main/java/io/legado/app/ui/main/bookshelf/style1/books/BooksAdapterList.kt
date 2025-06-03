@@ -10,6 +10,7 @@ import io.legado.app.data.entities.Book
 import io.legado.app.databinding.ItemBookshelfListBinding
 import io.legado.app.help.book.isLocal
 import io.legado.app.help.config.AppConfig
+import io.legado.app.utils.LogUtils
 import io.legado.app.utils.invisible
 import io.legado.app.utils.toTimeAgo
 import splitties.views.onLongClick
@@ -20,6 +21,10 @@ class BooksAdapterList(
     private val callBack: CallBack,
     private val lifecycle: Lifecycle
 ) : BaseBooksAdapter<ItemBookshelfListBinding>(context) {
+
+    companion object {
+        private const val TAG = "BooksAdapterList"
+    }
 
     override fun getViewBinding(parent: ViewGroup): ItemBookshelfListBinding {
         return ItemBookshelfListBinding.inflate(inflater, parent, false)
@@ -94,8 +99,10 @@ class BooksAdapterList(
 
     override fun registerListener(holder: ItemViewHolder, binding: ItemBookshelfListBinding) {
         holder.itemView.apply {
+            // 书架界面书籍列表的点击事件
             setOnClickListener {
                 getItem(holder.layoutPosition)?.let {
+                    LogUtils.d(TAG,"itemView onClick ${it.name}")
                     callBack.open(it)
                 }
             }
