@@ -20,6 +20,7 @@ import io.legado.app.ui.book.read.page.entities.TextPage
 import io.legado.app.ui.book.read.page.entities.TextPos
 import io.legado.app.ui.book.read.page.provider.ChapterProvider
 import io.legado.app.ui.widget.BatteryView
+import io.legado.app.utils.LogUtils
 import io.legado.app.utils.activity
 import io.legado.app.utils.applyNavigationBarPadding
 import io.legado.app.utils.applyStatusBarPadding
@@ -33,6 +34,10 @@ import java.util.Date
  * 页面视图
  */
 class PageView(context: Context) : FrameLayout(context) {
+
+    companion object {
+        const val TAG = "PageView"
+    }
 
     private val binding = ViewBookPageBinding.inflate(LayoutInflater.from(context), this, true)
     private val readBookActivity get() = activity as? ReadBookActivity
@@ -295,6 +300,7 @@ class PageView(context: Context) : FrameLayout(context) {
         if (resetPageOffset) {
             resetPageOffset()
         }
+        LogUtils.d (TAG,"setContent : ${textPage.text}")
         binding.contentTextView.setContent(textPage)
     }
 
@@ -354,6 +360,17 @@ class PageView(context: Context) : FrameLayout(context) {
      * 滚动事件
      */
     fun scroll(offset: Int) {
+        /**
+         * RuntimeException("isTest: scroll").printStackTrace()
+         *
+         * at io.legado.app.ui.book.read.page.PageView.scroll(PageView.kt:363)
+         * at io.legado.app.ui.book.read.page.delegate.ScrollPageDelegate.onScroll(ScrollPageDelegate.kt:67)
+         * at io.legado.app.ui.book.read.page.ReadView.setTouchPoint(ReadView.kt:308)
+         * at io.legado.app.ui.book.read.page.delegate.ScrollPageDelegate.onScroll(ScrollPageDelegate.kt:82)
+         * at io.legado.app.ui.book.read.page.delegate.ScrollPageDelegate.onTouch(ScrollPageDelegate.kt:57)
+         * at io.legado.app.ui.book.read.page.ReadView.onTouchEvent(ReadView.kt:223)
+         * at android.view.View.performOnTouchCallback(View.java:16679)
+         */
         binding.contentTextView.scroll(offset)
     }
 

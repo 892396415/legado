@@ -22,6 +22,7 @@ import io.legado.app.ui.book.read.page.entities.column.TextColumn
 import io.legado.app.ui.book.read.page.provider.ChapterProvider
 import io.legado.app.ui.book.read.page.provider.TextPageFactory
 import io.legado.app.ui.widget.dialog.PhotoDialog
+import io.legado.app.utils.LogUtils
 import io.legado.app.utils.activity
 import io.legado.app.utils.dpToPx
 import io.legado.app.utils.getCompatColor
@@ -107,18 +108,31 @@ class ContentTextView(context: Context, attrs: AttributeSet?) : View(context, at
      * 绘制页面
      */
     private fun drawPage(canvas: Canvas) {
+        // 获取当前页面的相对偏移量
         var relativeOffset = relativeOffset(0)
+        // 绘制当前页面 textPage.text 为当前页面显示的文本
+        LogUtils.d(TAG,"drawPage pageOffset textPage.text: " + textPage.text)
         textPage.draw(this, canvas, relativeOffset)
+        // 若不是滚动翻页模式，结束绘制
         if (!callBack.isScroll) return
-        //滚动翻页
+        // 滚动翻页
+        // 若不存在下一页，结束绘制
         if (!pageFactory.hasNext()) return
+        // 获取下一页
         val textPage1 = relativePage(1)
+        // 更新相对偏移量
         relativeOffset += textPage.height
+        // 绘制下一页
         textPage1.draw(this, canvas, relativeOffset)
+        // 若不存在下下页，结束绘制
         if (!pageFactory.hasNextPlus()) return
+        // 再次更新相对偏移量
         relativeOffset += textPage1.height
+        // 若下下页的相对偏移量小于可见区域高度，说明下下页在可见区域内
         if (relativeOffset < ChapterProvider.visibleHeight) {
+            // 获取下下页
             val textPage2 = relativePage(2)
+            // 绘制下下页
             textPage2.draw(this, canvas, relativeOffset)
         }
     }
@@ -136,10 +150,13 @@ class ContentTextView(context: Context, attrs: AttributeSet?) : View(context, at
      * pageOffset + textPage.height 为 textPage 下方的高度
      */
     fun scroll(mOffset: Int) {
+        // 将传入的滚动偏移量 mOffset 累加到 pageOffset 上，更新当前页面的偏移位置。
         pageOffset += mOffset
+        // 如果处于长截图模式，将 scrollY 减去 mOffset，实现长截图时的滚动效果
         if (longScreenshot) {
             scrollY += -mOffset
         }
+        // 没有上一页且向上滚动超过边界，将 pageOffset 重置为 0，即停止向上滚动
         if (!pageFactory.hasPrev() && pageOffset > 0) {
             pageOffset = 0
             pageDelegate?.abortAnim()
@@ -147,10 +164,14 @@ class ContentTextView(context: Context, attrs: AttributeSet?) : View(context, at
             && pageOffset < 0
             && pageOffset + textPage.height < ChapterProvider.visibleHeight
         ) {
+            // 当没有下一页，pageOffset 小于 0 且页面底部超出可见区域时，计算合适的偏移量，
+            // 将 pageOffset 设置为 0 和计算值中的较小值，并停止当前可能存在的动画
             val offset = (ChapterProvider.visibleHeight - textPage.height).toInt()
             pageOffset = min(0, offset)
             pageDelegate?.abortAnim()
         } else if (pageOffset > 0) {
+            // 当 pageOffset 大于 0 时，尝试移动到上一页。如果成功，
+            // 将 pageOffset 减去当前页面的高度；否则，将 pageOffset 重置为 0，并停止当前可能存在的动画
             if (pageFactory.moveToPrev(true)) {
                 pageOffset -= textPage.height.toInt()
             } else {
@@ -158,6 +179,8 @@ class ContentTextView(context: Context, attrs: AttributeSet?) : View(context, at
                 pageDelegate?.abortAnim()
             }
         } else if (pageOffset < -textPage.height) {
+            // 当 pageOffset 小于当前页面高度的负值时，尝试移动到下一页。如果成功，
+            // 将 pageOffset 加上当前页面的高度；否则，将 pageOffset 设置为当前页面高度的负值，并停止当前可能存在的动画
             val height = textPage.height
             if (pageFactory.moveToNext(upContent = true)) {
                 pageOffset += height.toInt()
@@ -166,6 +189,7 @@ class ContentTextView(context: Context, attrs: AttributeSet?) : View(context, at
                 pageDelegate?.abortAnim()
             }
         }
+        // 调用 postInvalidate() 方法，请求在主线程中重绘视图，更新滚动后的页面显示
         postInvalidate()
     }
 
@@ -700,6 +724,8 @@ class ContentTextView(context: Context, attrs: AttributeSet?) : View(context, at
             }
         }
         private val cursorWidth = 24.dpToPx()
+
+        const val TAG = "ContentTextView"
     }
 
     interface CallBack {

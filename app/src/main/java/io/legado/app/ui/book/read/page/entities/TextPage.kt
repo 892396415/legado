@@ -15,6 +15,7 @@ import io.legado.app.ui.book.read.page.ContentTextView
 import io.legado.app.ui.book.read.page.entities.TextChapter.Companion.emptyTextChapter
 import io.legado.app.ui.book.read.page.entities.column.TextColumn
 import io.legado.app.ui.book.read.page.provider.ChapterProvider
+import io.legado.app.utils.LogUtils
 import io.legado.app.utils.canvasrecorder.CanvasRecorderFactory
 import io.legado.app.utils.canvasrecorder.recordIfNeeded
 import io.legado.app.utils.dpToPx
@@ -44,6 +45,7 @@ data class TextPage(
     companion object {
         val readProgressFormatter = DecimalFormat("0.0%")
         val emptyTextPage = TextPage()
+        const val TAG = "TextPage"
     }
 
     val lines: List<TextLine> get() = textLines
@@ -298,6 +300,7 @@ data class TextPage(
     }
 
     fun draw(view: ContentTextView, canvas: Canvas, relativeOffset: Float) {
+        LogUtils.d(TAG, "draw AppConfig.optimizeRender: " + AppConfig.optimizeRender)
         if (AppConfig.optimizeRender) {
             render(view)
             canvas.withTranslation(0f, relativeOffset) {

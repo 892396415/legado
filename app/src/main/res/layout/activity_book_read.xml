@@ -31,6 +31,7 @@
         android:src="@drawable/ic_cursor_right"
         android:visibility="invisible" />
 
+    <!--阅读界面的整体框架架构-->
     <io.legado.app.ui.book.read.ReadMenu
         android:id="@+id/read_menu"
         android:layout_width="match_parent"

@@ -1066,7 +1066,9 @@ class ReadBookActivity : BaseReadBookActivity(),
         resetPageOffset: Boolean,
         success: (() -> Unit)?
     ) {
+        LogUtils.d(TAG, "upContent = $relativePosition")
         lifecycleScope.launch {
+            // 在这里设置需要更新的文本内容
             binding.readView.upContent(relativePosition, resetPageOffset)
             if (relativePosition == 0) {
                 upSeekBarProgress()
@@ -1397,6 +1399,7 @@ class ReadBookActivity : BaseReadBookActivity(),
                     analyzeRule.evalJS(payAction).toString()
                 }.onSuccess(IO) {
                     if (it.isAbsUrl()) {
+                        LogUtils.d(TAG,"startActivity WebViewActivity")
                         startActivity<WebViewActivity> {
                             val bookSource = ReadBook.bookSource
                             putExtra("title", getString(R.string.chapter_pay))
@@ -1835,6 +1838,9 @@ class ReadBookActivity : BaseReadBookActivity(),
 
     companion object {
         const val RESULT_DELETED = 100
+
+        const val TAG = "ReadBookActivity"
+
     }
 
 }

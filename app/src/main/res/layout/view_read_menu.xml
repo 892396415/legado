@@ -354,6 +354,7 @@
                         app:tint="@color/primaryText"
                         tools:ignore="NestedWeights" />
 
+                    <!--朗读按钮-->
                     <TextView
                         android:id="@+id/tv_read_aloud"
                         android:layout_width="wrap_content"
