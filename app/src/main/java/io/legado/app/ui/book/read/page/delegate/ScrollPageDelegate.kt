@@ -8,11 +8,16 @@ import io.legado.app.help.book.isImage
 import io.legado.app.model.ReadBook
 import io.legado.app.ui.book.read.page.ReadView
 import io.legado.app.ui.book.read.page.provider.ChapterProvider
+import io.legado.app.utils.LogUtils
 
 class ScrollPageDelegate(readView: ReadView) : PageDelegate(readView) {
 
     // 滑动追踪的时间
     private val velocityDuration = 1000
+
+    companion object {
+        const val TAG = "ScrollPageDelegate"
+    }
 
     //速度追踪器
     private val mVelocity: VelocityTracker = VelocityTracker.obtain()
@@ -33,6 +38,7 @@ class ScrollPageDelegate(readView: ReadView) : PageDelegate(readView) {
         readView.onScrollAnimStop()
     }
 
+    // 当阅读界面设置为滚动方式时，在这里处理触摸事件
     override fun onTouch(event: MotionEvent) {
         //在多点触控时，事件不走ACTION_DOWN分支而产生的特殊事件处理
         if (event.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
@@ -80,6 +86,7 @@ class ScrollPageDelegate(readView: ReadView) : PageDelegate(readView) {
         val pointY = event.getY(event.pointerCount - 1)
         if (isMoved || readView.isLongScreenShot()) {
             readView.setTouchPoint(pointX, pointY, false)
+            LogUtils.d(TAG, "onScroll pointX: $pointX pointY: $pointY")
         }
         if (!isMoved) {
             val deltaX = (pointX - startX).toInt()

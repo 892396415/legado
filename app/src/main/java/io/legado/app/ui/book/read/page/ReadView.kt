@@ -510,6 +510,7 @@ class ReadView(context: Context, attrs: AttributeSet) :
      * 更新翻页动画
      */
     fun upPageAnim(upRecorder: Boolean = false) {
+        // isScroll == true 时, 翻页动画为滚动翻页, 否则为滑动翻页
         isScroll = ReadBook.pageAnim() == 3
         ChapterProvider.upLayout()
         when (ReadBook.pageAnim()) {
