@@ -55,30 +55,45 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        // - 初始化崩溃处理器（`CrashHandler`）
         CrashHandler(this)
+        // 调试模式下的线程设置
         if (isDebuggable) {
             ThreadUtils.setThreadAssertsDisabledForTesting(true)
         }
+        // 保存初始配置
         oldConfig = Configuration(resources.configuration)
+        // 初始化日夜模式
         applyDayNightInit(this)
+        // 注册Activity生命周期回调
         registerActivityLifecycleCallbacks(LifecycleHelp)
+        // 注册SharedPreferences变化监听器
         defaultSharedPreferences.registerOnSharedPreferenceChangeListener(AppConfig)
+        // 启动协程进行异步初始化工作：
         Coroutine.async {
+            // 日志工具初始化
             LogUtils.init(this@App)
             LogUtils.d("App", "onCreate")
             LogUtils.logDeviceInfo()
-            //预下载Cronet so
+            // 预下载Cronet so （Chromium网络库）
             Cronet.preDownload()
+            // 创建通知渠道
             createNotificationChannels()
+            // 配置LiveEventBus（事件总线）
             LiveEventBus.config()
                 .lifecycleObserverAlwaysActive(true)
                 .autoClear(false)
                 .enableLogger(BuildConfig.DEBUG || AppConfig.recordLog)
                 .setLogger(EventLogger())
+            // 版本更新处理
             DefaultData.upVersion()
+            // 应用冻结监控初始化
             AppFreezeMonitor.init(this@App)
+            // 设置URL流处理器工厂
             URL.setURLStreamHandlerFactory(ObsoleteUrlFactory(okHttpClient))
+            // 安装GMS TLS提供程序
             launch { installGmsTlsProvider(appCtx) }
+            // 初始化Rhino脚本引擎
             RhinoScriptEngine
             //初始化封面
             BookCover.toString()

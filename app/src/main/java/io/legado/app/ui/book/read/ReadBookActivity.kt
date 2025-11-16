@@ -1270,6 +1270,7 @@ class ReadBookActivity : BaseReadBookActivity(),
      */
     override fun openChapterList() {
         ReadBook.book?.let {
+            LogUtils.d(TAG, "openChapterList = ${it.bookUrl}")
             tocActivity.launch(it.bookUrl)
         }
     }
