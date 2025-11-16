@@ -53,6 +53,12 @@ import java.io.File
 import java.io.FileOutputStream
 import kotlin.system.exitProcess
 
+/**
+ * 作用: 启动指定Activity
+ * 内联函数 inline + reified 关键字: 允许在运行时获取泛型类型参数的实际类型(泛型实化的应用)
+ * @param A 要启动的Activity类
+ * @param configIntent 用于配置Intent的lambda表达式，例如在调用的时候添加必要的参数，如添加extra数据
+ */
 inline fun <reified A : Activity> Context.startActivity(configIntent: Intent.() -> Unit = {}) {
     val intent = Intent(this, A::class.java)
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
