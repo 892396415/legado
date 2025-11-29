@@ -421,7 +421,7 @@ object AppConfig : SharedPreferences.OnSharedPreferenceChangeListener {
         }
 
     var showBookshelfFastScroller: Boolean
-        get() = appCtx.getPrefBoolean(PreferKey.showBookshelfFastScroller, false)
+        get() = appCtx.getPrefBoolean(PreferKey.showBookshelfFastScroller, true)
         set(value) {
             appCtx.putPrefBoolean(PreferKey.showBookshelfFastScroller, value)
         }
