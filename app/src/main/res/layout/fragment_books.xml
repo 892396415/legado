@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!-- 书架的RecyclerView列表 -->
         <io.legado.app.ui.widget.recycler.scroller.FastScrollRecyclerView
             android:id="@+id/rv_bookshelf"
             android:layout_width="match_parent"

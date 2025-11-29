@@ -195,6 +195,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tv_read"
         tools:ignore="TextContrastCheck" />
 
+    <!-- 覆盖整个item的透明蒙层，承载点击/焦点触发的波纹动画，避免动画被子View遮挡 attr/selectableItemBackground-->
     <View
         android:id="@+id/vw_foreground"
         android:layout_width="match_parent"
