@@ -11,6 +11,20 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.RecyclerView
 import io.legado.app.R
 
+/**
+ * FastScrollRecyclerView 是一个自定义的 RecyclerView 子类，主要作用是为 RecyclerView 添加快速滚动功能。它通过集成一个 FastScroller 组件来实现以下核心功能：
+ * 主要功能特点：
+ * 快速滚动条：在列表右侧显示一个可拖动的滚动条，用户可以快速拖动到列表的任意位置
+ * 章节索引：当适配器实现 FastScroller.SectionIndexer 接口时，会显示章节气泡提示当前滚动位置对应的章节标题
+ * 自定义样式：支持自定义滚动条、轨道、气泡的颜色和可见性
+ * 状态监听：提供滚动状态变化的监听接口
+ * 工作原理：
+ * 在 onAttachedToWindow() 中，将 FastScroller 组件添加到 RecyclerView 的父容器中
+ * 通过适配器接口获取章节信息来显示索引气泡
+ * 同步 RecyclerView 的滚动位置与快速滚动条的位置
+ * 在 onDetachedFromWindow() 中正确清理资源，避免内存泄漏
+ * 这个类特别适用于需要处理大量数据的列表场景，让用户能够快速导航到特定位置，提升用户体验。
+ */
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 class FastScrollRecyclerView : RecyclerView {
 
