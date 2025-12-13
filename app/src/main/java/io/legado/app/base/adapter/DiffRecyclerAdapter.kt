@@ -44,6 +44,11 @@ abstract class DiffRecyclerAdapter<ITEM, VB : ViewBinding>(protected val context
 
     open val keepScrollPosition = false
 
+    /**
+     * 4. 点击事件统一处理
+     * 提供 setOnItemClickListener 和 setOnItemLongClickListener 方法，封装 item 点击/长按事件逻辑：
+     * 无需在每个子类中重复编写 setOnClickListener，直接通过回调获取点击事件和对应 item 数据。
+     */
     fun setOnItemClickListener(listener: (holder: ItemViewHolder, item: ITEM) -> Unit) {
         itemClickListener = listener
     }
@@ -127,6 +132,11 @@ abstract class DiffRecyclerAdapter<ITEM, VB : ViewBinding>(protected val context
         return ItemViewHolder(getViewBinding(parent))
     }
 
+    /**
+     * 通过抽象方法 getViewBinding() 强制子类使用 ViewBinding 进行布局绑定，替代传统 findViewById：
+     * 优势：类型安全（编译期检查视图 ID）、减少空指针异常、简化视图操作代码。
+     * 子类只需实现 getViewBinding(parent: ViewGroup): VB 即可完成布局加载。
+     */
     protected abstract fun getViewBinding(parent: ViewGroup): VB
 
     final override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {}

@@ -72,18 +72,29 @@ class MyFragment() : BaseFragment(R.layout.fragment_my_config), MainFragmentInte
     }
 
     /**
-     * 配置
+     * 配置片段，处理用户偏好设置
      */
     class MyPreferenceFragment : PreferenceFragment(),
         SharedPreferences.OnSharedPreferenceChangeListener {
 
+        /**
+         * 创建偏好设置界面，初始化各种设置项
+         * @param savedInstanceState 保存的实例状态
+         * @param rootKey 根键，用于分层显示偏好设置
+         */
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+            // 更新Web服务状态到偏好设置
             putPrefBoolean(PreferKey.webService, WebService.isRun)
+
+            // 从XML资源加载偏好设置布局
             addPreferencesFromResource(R.xml.pref_main)
+
+            // 设置Web服务开关的长按事件
             findPreference<SwitchPreference>("webService")?.onLongClick {
                 if (!WebService.isRun) {
                     return@onLongClick false
                 }
+                // 长按时显示选项菜单：复制地址或浏览器打开
                 context?.selector(arrayListOf("复制地址", "浏览器打开")) { _, i ->
                     when (i) {
                         0 -> context?.sendToClip(it.summary.toString())
@@ -92,6 +103,8 @@ class MyFragment() : BaseFragment(R.layout.fragment_my_config), MainFragmentInte
                 }
                 true
             }
+
+            // 监听Web服务状态变化事件
             observeEventSticky<String>(EventBus.WEB_SERVICE) {
                 findPreference<SwitchPreference>(PreferKey.webService)?.let {
                     it.isChecked = WebService.isRun
@@ -102,35 +115,56 @@ class MyFragment() : BaseFragment(R.layout.fragment_my_config), MainFragmentInte
                     }
                 }
             }
+
+            // 设置主题模式变更监听器
             findPreference<NameListPreference>(PreferKey.themeMode)?.let {
                 it.setOnPreferenceChangeListener { _, _ ->
+                    // 主题变更后应用日夜间模式
                     view?.post { ThemeConfig.applyDayNight(requireContext()) }
                     true
                 }
             }
         }
 
+        /**
+         * 视图创建完成后的初始化
+         * @param view 创建的视图
+         * @param savedInstanceState 保存的实例状态
+         */
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
+            // 设置列表边缘效果颜色为主题主色
             listView.setEdgeEffectColor(primaryColor)
         }
 
+        /**
+         * 片段恢复可见状态时注册偏好设置变更监听器
+         */
         override fun onResume() {
             super.onResume()
             preferenceManager.sharedPreferences?.registerOnSharedPreferenceChangeListener(this)
         }
 
+        /**
+         * 片段进入暂停状态时取消注册偏好设置变更监听器
+         */
         override fun onPause() {
             preferenceManager.sharedPreferences?.unregisterOnSharedPreferenceChangeListener(this)
             super.onPause()
         }
 
+        /**
+         * 处理偏好设置变更事件
+         * @param sharedPreferences 共享偏好设置实例
+         * @param key 发生变更的设置键
+         */
         override fun onSharedPreferenceChanged(
             sharedPreferences: SharedPreferences?,
             key: String?
         ) {
             when (key) {
                 PreferKey.webService -> {
+                    // Web服务开关状态变化时启动或停止服务
                     if (requireContext().getPrefBoolean("webService")) {
                         WebService.start(requireContext())
                     } else {
@@ -138,10 +172,15 @@ class MyFragment() : BaseFragment(R.layout.fragment_my_config), MainFragmentInte
                     }
                 }
 
-                "recordLog" -> LogUtils.upLevel()
+                "recordLog" -> LogUtils.upLevel() // 日志记录级别变化时更新日志级别
             }
         }
 
+        /**
+         * 处理偏好设置项的点击事件
+         * @param preference 被点击的偏好设置项
+         * @return 是否已处理点击事件
+         */
         override fun onPreferenceTreeClick(preference: Preference): Boolean {
             when (preference.key) {
                 "bookSourceManage" -> startActivity<BookSourceActivity>()
@@ -164,11 +203,9 @@ class MyFragment() : BaseFragment(R.layout.fragment_my_config), MainFragmentInte
                 "fileManage" -> startActivity<FileManageActivity>()
                 "readRecord" -> startActivity<ReadRecordActivity>()
                 "about" -> startActivity<AboutActivity>()
-                "exit" -> activity?.finish()
+                "exit" -> activity?.finish() // 退出应用
             }
             return super.onPreferenceTreeClick(preference)
         }
-
-
     }
 }
