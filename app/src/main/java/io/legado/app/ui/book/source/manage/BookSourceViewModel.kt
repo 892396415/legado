@@ -30,8 +30,23 @@ class BookSourceViewModel(application: Application) : BaseViewModel(application)
         execute {
             sources.sortBy { it.customOrder }
             val minOrder = appDb.bookSourceDao.minOrder - 1
+            val maxTopWeight = appDb.bookSourceDao.maxTopWeight + 1
             val array = sources.mapIndexed { index, it ->
-                it.copy(customOrder = minOrder - index)
+                it.copy(customOrder = minOrder - index, topWeight = maxTopWeight + index)
+            }
+            appDb.bookSourceDao.upOrder(array)
+        }
+
+        execute {
+
+        }
+    }
+
+    fun cancelTopSource(vararg sources: BookSourcePart) {
+        execute {
+            val defaultOrder = 0
+            val array = sources.map {
+                it.copy(customOrder = defaultOrder)
             }
             appDb.bookSourceDao.upOrder(array)
         }

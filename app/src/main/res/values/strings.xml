@@ -321,6 +321,7 @@
     <string name="line_size">Line spacing</string>
     <string name="paragraph_size">Paragraph spacing</string>
     <string name="to_top">To Top</string>
+    <string name="cancel_top">Cancel Top</string>
     <string name="selection_to_top">Selection To Top</string>
     <string name="to_bottom">To Bottom</string>
     <string name="selection_to_bottom">Selection To Bottom</string>

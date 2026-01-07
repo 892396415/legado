@@ -44,6 +44,9 @@ data class BookSource(
     // 手动排序编号
     @ColumnInfo(defaultValue = "0")
     var customOrder: Int = 0,
+    // 是否被设置为置顶，0为否，非0代表设置为置顶，数值越大，越靠前
+    @ColumnInfo(defaultValue = "0")
+    var topWeight: Int = 0,
     // 是否启用
     @ColumnInfo(defaultValue = "1")
     var enabled: Boolean = true,

@@ -29,4 +29,8 @@
         android:id="@+id/menu_enable_explore"
         android:title="@string/enable_explore" />
 
+    <item
+        android:id="@+id/menu_cancel_top"
+        android:title="@string/cancel_top" />
+
 </menu>

@@ -280,6 +280,9 @@ interface BookSourceDao {
     @get:Query("select max(customOrder) from book_sources")
     val maxOrder: Int
 
+    @get:Query("select max(topWeight) from book_sources")
+    val maxTopWeight: Int
+
     @get:Query(
         """select exists (select 1 
         from book_sources group by customOrder having count(customOrder) > 1)"""
