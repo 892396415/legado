@@ -49,12 +49,27 @@ class BookSourceAdapter(
             }
         }
 
+    /**
+     * DiffUtil 是 Android 提供的工具类，核心作用是计算两个列表的差异，
+     * 并输出 “哪些项新增、删除、移动、内容变化”，从而让 RecyclerView 只刷新变化的项，
+     * 而非全量刷新（notifyDataSetChanged），大幅提升列表性能。
+     *
+     * 而 DiffUtil.ItemCallback<ITEM> 是 DiffUtil 的 “规则定义器”—— 你需要实现它的抽象方法，
+     * 告诉 DiffUtil 如何判断两个列表项是否是 “同一个项”、以及 “同一个项的内容是否变化”。
+     */
     val diffItemCallback = object : DiffUtil.ItemCallback<BookSourcePart>() {
 
+        /**
+         * DiffUtil.ItemCallback<ITEM> 是抽象类，必须实现两个核心方法
+         *  核心方法1：判断两个项是否是“同一个实体”（比如根据唯一ID）
+         */
         override fun areItemsTheSame(oldItem: BookSourcePart, newItem: BookSourcePart): Boolean {
             return oldItem.bookSourceUrl == newItem.bookSourceUrl
         }
 
+        /**
+         *  核心方法2：判断两个项的“内容是否变化”（比如根据字段值）
+         */
         override fun areContentsTheSame(oldItem: BookSourcePart, newItem: BookSourcePart): Boolean {
             return oldItem.bookSourceName == newItem.bookSourceName
                     && oldItem.bookSourceGroup == newItem.bookSourceGroup
@@ -63,6 +78,9 @@ class BookSourceAdapter(
                     && oldItem.hasExploreUrl == newItem.hasExploreUrl
         }
 
+        /**
+         * 可选方法：如果内容变化时，需要局部刷新（而非整个Item），可重写此方法
+         */
         override fun getChangePayload(oldItem: BookSourcePart, newItem: BookSourcePart): Any? {
             val payload = Bundle()
             if (oldItem.bookSourceName != newItem.bookSourceName
