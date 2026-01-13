@@ -401,6 +401,11 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
             ).catch {
                 AppLog.put("书源界面更新书源出错", it)
             }.flowOn(IO).conflate().collect { data ->
+                /**
+                 * 通过flowWithLifecycleAndDatabaseChange数据是否变化
+                 * 书源列表发生变化后，更新适配器数据
+                 * 并更新itemTouchCallback是否可以拖动
+                 */
                 adapter.setItems(data, adapter.diffItemCallback, !Debug.isChecking)
                 itemTouchCallback.isCanDrag =
                     sort == BookSourceSort.Default && !showDuplicationSource
