@@ -23,8 +23,6 @@ data class BookSourcePart(
     var bookSourceGroup: String? = null,
     // 手动排序编号
     var customOrder: Int = 0,
-    // 是否被设置为置顶，0为否，非0代表设置为置顶，数值越大，越靠前
-    var topWeight: Int = 0,
     // 是否启用
     var enabled: Boolean = true,
     // 启用发现

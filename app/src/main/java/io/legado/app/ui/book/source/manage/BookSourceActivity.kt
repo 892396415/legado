@@ -751,7 +751,6 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
         viewModel.enableExplore(enable, listOf(bookSource))
     }
 
-    // 置顶动作的监听
     override fun toTop(bookSource: BookSourcePart) {
         if (sortAscending) {
             viewModel.topSource(bookSource)
