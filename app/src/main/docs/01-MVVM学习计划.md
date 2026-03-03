@@ -236,6 +236,8 @@ viewModel.addBookProgressLiveData.observe(this) { count ->
 - `switchMap()`：切换数据源
 - `MediatorLiveData`：合并多个数据源
 
+答案见文档：`app/src/main/docs/01-MVVM学习计划/04-LiveData变换.md`
+
 ---
 
 ## 第四阶段：Lifecycle 组件（Day 7）
@@ -288,6 +290,8 @@ override fun observeLiveBus() {
     }
 }
 ```
+
+答案见文档：`app/src/main/docs/01-MVVM学习计划/05-LiveEventBus详解.md`
 
 ---
 
