@@ -343,85 +343,127 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
 ### 6.1 实现一个完整的 MVVM 页面
 
-**任务**：仿照 Bookshelf 模块，实现一个"任务列表"页面
+**任务**：实现一个"阅读历史记录"页面，展示用户的阅读历史
 
-**步骤**：
+**Demo 文件列表**：
 
-1. **创建数据模型**
+| 文件 | 路径 | 说明 |
+|------|------|------|
+| Entity | `data/entities/ReadingRecord.kt` | 阅读记录实体类 |
+| DAO | `data/dao/ReadingRecordDao.kt` | 数据访问层 |
+| ViewModel | `ui/main/readingRecord/ReadingRecordViewModel.kt` | 业务逻辑层 |
+| Adapter | `ui/main/readingRecord/ReadingRecordAdapter.kt` | RecyclerView 适配器 |
+| Fragment | `ui/main/readingRecord/ReadingRecordFragment.kt` | 视图层 |
+| 布局 | `res/layout/fragment_reading_record.xml` | Fragment 布局 |
+| Item布局 | `res/layout/item_reading_record.xml` | 列表项布局 |
+| 菜单 | `res/menu/menu_reading_record.xml` | 菜单资源 |
+
+**代码结构**：
+
+```
+ReadingRecord (Entity)
+    │
+    ├── id: Long (主键)
+    ├── bookUrl: String (书籍URL)
+    ├── bookName: String (书名)
+    ├── author: String (作者)
+    ├── currentChapterName: String (当前章节)
+    ├── readProgress: Long (阅读进度)
+    ├── readDuration: Long (阅读时长)
+    └── lastReadTime: Long (最后阅读时间)
+          │
+          ▼
+ReadingRecordDao (DAO)
+    ├── flowAll(): Flow<List<ReadingRecord>>
+    ├── insert()
+    ├── update()
+    ├── delete()
+    └── deleteAll()
+          │
+          ▼
+ReadingRecordViewModel (ViewModel)
+    ├── recordsLiveData: MutableLiveData<List<ReadingRecord>>
+    ├── loadRecords(): 加载所有记录
+    ├── addRecord(): 添加记录
+    ├── deleteRecord(): 删除记录
+    └── clearAllRecords(): 清空记录
+          │
+          ▼
+ReadingRecordFragment (View)
+    ├── observe LiveData
+    ├── handle user actions
+    └── update UI
+```
+
+**核心代码示例**：
+
+1. **Entity 定义**
 ```kotlin
-@Entity(tableName = "tasks")
-data class Task(
-    @PrimaryKey
-    val id: Long,
-    val title: String,
-    val description: String,
-    val isCompleted: Boolean = false,
-    val createdAt: Long = System.currentTimeMillis()
+@Entity(tableName = "reading_records")
+data class ReadingRecord(
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+    val bookUrl: String = "",
+    val bookName: String = "",
+    val author: String = "",
+    val currentChapterName: String = "",
+    val readProgress: Long = 0,
+    val readDuration: Long = 0,
+    val lastReadTime: Long = System.currentTimeMillis()
 )
 ```
 
-2. **创建 DAO**
+2. **ViewModel 使用 execute**
 ```kotlin
-@Dao
-interface TaskDao {
-    @Query("SELECT * FROM tasks ORDER BY createdAt DESC")
-    fun observeAll(): Flow<List<Task>>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(task: Task)
-
-    @Delete
-    suspend fun delete(task: Task)
-}
-```
-
-3. **创建 ViewModel**
-```kotlin
-class TaskViewModel(application: Application) : BaseViewModel(application) {
-
-    val tasksLiveData = MutableLiveData<List<Task>>()
-
-    fun loadTasks() {
+class ReadingRecordViewModel(application: Application) : BaseViewModel(application) {
+    
+    val recordsLiveData = MutableLiveData<List<ReadingRecord>>()
+    
+    fun loadRecords() {
         execute {
-            appDb.taskDao.observeAll().collect { tasks ->
-                tasksLiveData.postValue(tasks)
-            }
+            appDb.readingRecordDao.flowAll()
+                .catch { e -> ... }
+                .collect { records ->
+                    recordsLiveData.postValue(records)
+                }
         }
     }
-
-    fun addTask(title: String) {
+    
+    fun deleteRecord(record: ReadingRecord) {
         execute {
-            val task = Task(
-                id = System.currentTimeMillis(),
-                title = title
-            )
-            appDb.taskDao.insert(task)
-        }
+            appDb.readingRecordDao.delete(record)
+        }.onSuccess { ... }
+         .onError { ... }
     }
 }
 ```
 
-4. **创建 Fragment**
+3. **Fragment 观察 LiveData**
 ```kotlin
-class TaskFragment : VMBaseFragment<TaskViewModel>(R.layout.fragment_task) {
-
-    override val viewModel by viewModels<TaskViewModel>()
-
-    private val adapter = TaskAdapter()
-
+class ReadingRecordFragment : VMBaseFragment<ReadingRecordViewModel>(R.layout.fragment_reading_record) {
+    
+    override val viewModel by viewModels<ReadingRecordViewModel>()
+    
     override fun onFragmentCreated(view: View, savedInstanceState: Bundle?) {
-        binding.recyclerView.adapter = adapter
-
-        // 观察 LiveData
-        viewModel.tasksLiveData.observe(viewLifecycleOwner) { tasks ->
-            adapter.submitList(tasks)
+        // 观察数据变化
+        viewModel.recordsLiveData.observe(viewLifecycleOwner) { records ->
+            adapter.submitList(records)
         }
-
+        
         // 加载数据
-        viewModel.loadTasks()
+        viewModel.loadRecords()
     }
 }
 ```
+
+**练习任务**：
+
+1. [ ] 阅读 `ReadingRecordViewModel` 源码，理解 execute 的使用
+2. [ ] 阅读 `ReadingRecordFragment` 源码，理解 LiveData 观察
+3. [ ] 阅读 `ReadingRecordAdapter` 源码，理解 RecyclerView Adapter
+4. [ ] 尝试添加菜单中的"添加示例数据"功能
+5. [ ] 尝试添加"下拉刷新"功能
+6. [ ] 思考如何实现"阅读时长统计"功能
 
 ---
 

@@ -52,6 +52,7 @@
     <string name="rss">RSS feeds</string>
     <string name="all">All</string>
     <string name="recent_reading">Recent reading</string>
+    <string name="reading_record">Reading Record</string>
     <string name="last_read">Last reading</string>
     <string name="update_log">What\'s new</string>
     <string name="bookshelf_empty">The bookshelf is still empty. Search for books or add them from discovery!</string>

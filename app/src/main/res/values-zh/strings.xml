@@ -51,6 +51,7 @@
     <string name="rss">订阅</string>
     <string name="all">全部</string>
     <string name="recent_reading">最近阅读</string>
+    <string name="reading_record">阅读记录</string>
     <string name="last_read">最后阅读</string>
     <string name="update_log">更新日志</string>
     <string name="bookshelf_empty">书架还空着，先去搜索书籍或从发现里添加吧！</string>
